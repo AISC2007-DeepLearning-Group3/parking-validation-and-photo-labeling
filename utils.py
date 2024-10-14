@@ -4,6 +4,8 @@ from tensorflow.keras.preprocessing.image import img_to_array
 import joblib
 from tensorflow.keras.models import load_model  # For DNN and CNN models
 from lime import lime_image
+from lime.lime_tabular import LimeTabularExplainer
+
 
 class Helper():
 
@@ -18,11 +20,11 @@ class Helper():
             'pkl/adaboost_model.pkl')  # AdaBoost model
         self.xgb_model = joblib.load(
             'pkl/xgboost_model.pkl')  # XGBoost model
-        
+
         # Ensemble model combining Ada, XGBoost, RandomForest
         self.ensemble_model = joblib.load(
             'pkl/ensemble_model.pkl')
-        
+
         # CNN model for image classification
         self.cnn_model = load_model('models/cnn_model.h5')
         # dnn_image_model = load_model('dnn_image_model.h5')  # DNN model for image classification
@@ -35,7 +37,7 @@ class Helper():
         # Labels for image classification (replace with your actual labels)
         self.class_labels = ['drink', 'food', 'inside', 'menu', 'outside']
 
-    def preprocess_image(img):
+    def preprocess_image(self, img):
         img = img.resize((128, 128))  # Resizing the image to 256x256
         img_array = img_to_array(img)
         # Expanding dimensions to match model input
@@ -43,33 +45,27 @@ class Helper():
         img_array /= 255.0  # Normalize to [0, 1]
         return img_array
 
+
 class ModelPrediction(Helper):
 
-    def __init__(self):
-        self.X_train_encoded = None
-        self.feature_names = None
-        self.categorical_features = None
-
-    def preprocessing_train(self):
-
-        # Preprocess X_train
-        self.X_train_encoded = self.preprocessor.transform(self.X_train)
-
-        # Extract feature names from the preprocessor after transformation
-        self.feature_names = self.preprocessor.get_feature_names_out()
-
-        # Identify categorical features (if they were one-hot encoded in preprocessor)
-        self.categorical_features = [i for i, col in enumerate(
-            self.feature_names) if 'onehot' in col]
-        
     def Interpretability_for_parking(self):
         # LIME Tabular explainer for the first tab
-        return lime.lime_tabular.LimeTabularExplainer(
-            self.X_train_encoded,
+        # Preprocess X_train
+        X_train_encoded = self.preprocessor.transform(self.X_train)
+
+        # Extract feature names from the preprocessor after transformation
+        feature_names = self.preprocessor.get_feature_names_out()
+
+        # Identify categorical features (if they were one-hot encoded in preprocessor)
+        categorical_features = [i for i, col in enumerate(
+            feature_names) if 'onehot' in col]
+
+        return LimeTabularExplainer(
+            X_train_encoded,
             mode='classification',
-            feature_names=self.feature_names,
+            feature_names=feature_names,
             class_names=['No Parking', 'Parking'],
-            categorical_features=self.categorical_features,
+            categorical_features=categorical_features,
             discretize_continuous=True
         )
 
@@ -95,7 +91,6 @@ class ModelPrediction(Helper):
         proba_class_1 = self.dnn_model.predict(x)
         proba_class_0 = 1 - proba_class_1
         return np.hstack((proba_class_0, proba_class_1))
-
 
     def get_predictions(self, images):
         return self.cnn_model.predict(images)

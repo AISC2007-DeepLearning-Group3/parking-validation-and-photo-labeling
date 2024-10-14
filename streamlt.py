@@ -1,3 +1,4 @@
+import lime
 from matplotlib import pyplot as plt
 import numpy as np
 import streamlit as st
@@ -45,7 +46,7 @@ class StreamLit_App(Helper):
         # Limit to first 10 samples for display purposes
         for i in range(min(10, len(self.input_data_encoded))):
             st.write(f"#### Sample {i + 1} Explanation:")
-            exp = self.explainer.explain_instance(
+            exp = ModelPrediction().Interpretability_for_parking().explain_instance(
                 self.input_data_encoded[i], ModelPrediction().predict_fn, num_features=10)
 
             # Display the LIME explanation as a graph
@@ -72,7 +73,7 @@ class StreamLit_App(Helper):
         # LIME interpretability for CSV predictions (for all samples)
         st.write("### 🧠 Lime Interpretability for All Samples")
 
-        self.lime_interpretability(self.input_data_encoded)
+        self.lime_interpretability()
 
     def tabOne(self, tab1):
         '''
@@ -133,7 +134,7 @@ class StreamLit_App(Helper):
                          use_column_width=True)
 
                 # Preprocess the image (ensure the image is resized to the input shape expected by the CNN model)
-                preprocessed_image = ModelPrediction().preprocess_image(image)
+                preprocessed_image = self.preprocess_image(image)
 
                 # Predict label
                 predictions = ModelPrediction().get_predictions(preprocessed_image)
