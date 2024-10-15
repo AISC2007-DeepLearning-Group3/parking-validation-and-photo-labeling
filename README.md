@@ -1,6 +1,9 @@
 # Parking Validation and Photo Labelling 
 
 This project stems from an assignment provided to us, focusing on applying advanced machine learning and deep learning techniques. Specifically, we employ Convolutional Neural Networks (CNN) and Deep Neural Networks (DNN) to predict image categories, such as food, indoor settings, outdoor settings, drinks, and menus. Additionally, we leverage machine learning models like AdaBoost and XGBoost to validate the availability of parking spaces at a restaurant, further enhancing the prediction accuracy and reliability of the system.
+## Main App: https://dlcasestudy1group3.streamlit.app/
+## DNN App: https://dlassignmentgroup3-dnn.streamlit.app/
+
 
 
 https://github.com/user-attachments/assets/81bb9dff-a03b-45c1-b4a9-45cd5b1c7dfa
