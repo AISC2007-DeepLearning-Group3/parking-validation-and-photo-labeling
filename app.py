@@ -1,6 +1,11 @@
 import streamlit as st
 from streamlt import StreamLit_App
 
+
+if 'is_predicting' not in st.session_state:
+    st.session_state.is_predicting = False
+
+
 # Streamlit app with two tabs
 st.title("🚗 Business Parking and Image Labeling with Interpretability")
 # Create tabs
